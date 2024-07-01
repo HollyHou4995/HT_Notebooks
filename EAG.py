@@ -11,14 +11,14 @@ st.title("EAG Employee Survey Overview")
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-question_options = ["Introduction", "Question 1", "Question 2", "Question 3", "Question 4", "Question 5", "Question 6"]
+question_options = ["Introduction", "Question 1", "Question 2", "Question 3", "Question 4", "Question 5", "Question 6", "For Future Surveys"]
 selected_question = st.sidebar.radio("Go to", question_options)
 
 # Load the survey data
 encodings = ['latin1', 'iso-8859-1', 'cp1252']
 for encoding in encodings:
     try:
-        df = pd.read_csv('survey.csv', encoding=encoding)
+        df = pd.read_csv('EAG_survey.csv', encoding=encoding)
         print(f"Successfully read the file with encoding: {encoding}")
         break
     except UnicodeDecodeError:
@@ -54,27 +54,27 @@ def plot_bar_chart(dataframe, column_name):
 
 # Main content based on selected question
 if selected_question == "Introduction":
-    st.write("This report aims to provide a comprehensive understanding of the 2024 EAG employee survey. By understanding the EAG members' feedback on the previous events and their expectations for future events, we can identify key areas of improvement and tailor our future initiatives to better meet their needs. This report will cover various aspects such as XXX.")
+    st.write("This report aims to provide a comprehensive understanding of the 2024 EAG employee survey. By understanding the EAG members' feedback on the previous events and their expectations for future events, we can identify key areas of improvement and tailor our future initiatives to better meet their needs. This report will cover various aspects such as the preferred activities, preferred time and frequency, and any additional comments and suggestions.")
     st.subheader("Survey Results Dataset")
     st.dataframe(df)
-    st.write('Please note that we did not asked for any personal information in the survey. The City and State/Region come from their IP addresses. Most of the IP addresses are in Ocala, Florida with the coordinates (-81.62210083, 28.63439941). One assumption is this is their VPN IP. If interested, we might need to turn to IT team for a more accurate explaination.')
-    state_count = df['State/Region'].value_counts()
-    # Convert to DataFrame and reset the index
-    df_state = pd.DataFrame(state_count).reset_index()
-    df_state.columns = ['State_Code', 'count']
-    # 
-    # Create a choropleth map
-    fig = px.choropleth(
-        df_state,
-        locations='State_Code',
-        locationmode="USA-states",
-        color='count',
-        scope="usa",
-        color_continuous_scale="reds",
-        title="State Counts"
-        )
-    # Show the plot in Streamlit
-    st.plotly_chart(fig)
+    # st.write('Please note that we did not asked for any personal information in the survey. The City and State/Region come from their IP addresses. Most of the IP addresses are in Ocala, Florida with the coordinates (-81.62210083, 28.63439941). One assumption is this is their VPN IP. If interested, we might need to turn to IT team for a more accurate explaination.')
+    # state_count = df['State/Region'].value_counts()
+    # # Convert to DataFrame and reset the index
+    # df_state = pd.DataFrame(state_count).reset_index()
+    # df_state.columns = ['State_Code', 'count']
+    # # 
+    # # Create a choropleth map
+    # fig = px.choropleth(
+    #     df_state,
+    #     locations='State_Code',
+    #     locationmode="USA-states",
+    #     color='count',
+    #     scope="usa",
+    #     color_continuous_scale="reds",
+    #     title="State Counts"
+    #     )
+    # # Show the plot in Streamlit
+    # st.plotly_chart(fig)
 
 
 if selected_question == "Question 1":
@@ -106,10 +106,10 @@ if selected_question == "Question 1":
         ax.text(bar.get_x() + bar.get_width() / 2, height / 2, f'{int(height)}', ha='center', va='center')
     st.pyplot(fig)
 
-    st.write('Among the 169 respondents, social activities and events emerged as the most popular, with 115 individuals showing interest. Professional development was also highly valued by 107 respondents, indicating a strong desire for skill enhancement and career growth opportunities. Cross-functional networking attracted 80 respondents, emphasizing the importance of building relationships across different areas of the organization. Mentoring programs were of interest to 50 respondents, highlighting the need for guidance from experienced professionals. However, 31 respondents cited time constraints as a barrier to participation, and 16 respondents had other unspecified interests.')
+    st.write('Among the 140 respondents, social activities and events emerged as the most popular, with 115 individuals showing interest. Professional development was also highly valued by 107 respondents, indicating a strong desire for skill enhancement and career growth opportunities. Cross-functional networking attracted 80 respondents, emphasizing the importance of building relationships across different areas of the organization. Mentoring programs were of interest to 50 respondents, highlighting the need for guidance from experienced professionals. However, 31 respondents cited time constraints as a barrier to participation, and 16 respondents had other unspecified interests.')
 
     st.write("""
-             As for the 'Other' input, please note that it coined with the question 2 that asked for 'Others EAG acticities to participate', thus the 'Other' answers from Question 1 and 2 two are combined under Question 2.
+             The 'Other' input duplicates with Question 2 that asked for 'Others EAG acticities to participate', Please see the combined answers under Question 2.
              """)
     
 
@@ -130,6 +130,24 @@ if selected_question == "Question 2":
             fig = plot_bar_chart(df, column)
             st.pyplot(fig)
             st.write("---")
+    
+    data5 = {
+    "Preferred Activities": ["Club", "Sports Leagues", "Social Outings"],
+    "Average Score": [2.657142857, 3.2, 2.935714286],
+    "Mode Score": [2, 3, 1]
+    }
+    df5 = pd.DataFrame(data5)
+    # Display the DataFrame as a table in Streamlit
+    st.table(df5)
+    st.markdown('''
+                **Clubs**
+                The highest preferences for clubs are moderate, with scores of 2 and 3.This indicates that while clubs are not extremely disliked, they tend to be moderately liked.  
+                **Sports Leagues**
+                The preference for sports leagues is mostly positive, with scores of 3 and 4 indicating a strong favorability towards sports leagues.  
+                **Social Outing**
+                The distribution suggests that opinions on social outings are polarized, with notable peaks at the extremes of the scale. People who enjoy social outings tend to really appreciate them, whereas those who dislike them have a strong aversion, reflecting starkly contrasting attitudes toward social events.
+                
+                ''')
 
     df2_other = df.dropna(subset=['Other interested Activities'])
     # Create a new column 'shortened_ideas' to display truncated comments with a tooltip for full comment
@@ -147,6 +165,9 @@ if selected_question == "Question 3":
     """)
     fig = plot_bar_chart(df, 'Focus Areas in Future')
     st.pyplot(fig)
+    st.markdown('''
+                The dominant preference for "Engagement & Culture" suggests that participants value initiatives that foster a positive, engaging organizational culture. This could guide the EAG's strategic planning and resource allocation to focus primarily on enhancing engagement and cultural aspects within the organization over the next couple of years.
+                ''')
 
 if selected_question == "Question 4":
     st.subheader("Question 4")
@@ -190,6 +211,24 @@ if selected_question == "Question 6":
     st.markdown('</div>', unsafe_allow_html=True)
 
 
+if selected_question == "For Future Surveys":
+    # st.subheader("Inspirations")
+    st.markdown("""
+Demographic data, which is crucial for understanding a group's preferences and expectations, is missing in this survey. 
+- **Different ages and genders** tend to have varied preferences for activities, food, and availability. For example, younger employees may prioritize professional development, like workshops on new technologies, while established employees might value work-life balance initiatives.
+- **Cultural and family backgrounds** also influence preferences. People with similar backgrounds in cultures, marital status, and children often share mutual topics and preferred activities.
+- **Work experiences** also play a role. New graduates might feel more comfortable engaging in activities with their peers rather than with senior management. They aslo seek networking and mentoring opportunities. In contrast, mid-career employees might prefer leadership training.
+
+By collecting demographic data, we can gain a better understanding of the engaging group and customize events accordingly to enhance participation and satisfaction.
+
+In future surveys, we might add more questions to obtain data such as **gender**, **age**, **marital status**, **children**, etc. For people who are interested in children's events, charity, community services, or pet events, we might also ask for their **availability during weekends**.
+""")
+
+    
+    st.write('''Analyst: Holly Hou  
+             Position: Intern, Event Marketing  
+             Contact: xinyu.hou@healthtrustpg.com''')
+  
 
     
 
